@@ -7,7 +7,6 @@ import java.util.Arrays;
 public class LeetCode11 {
 
     public int candy(int[] arr) {
-        int candy = 1;
         int sum = 0;
         int len = arr.length;
         int[] cache = new int[len];
