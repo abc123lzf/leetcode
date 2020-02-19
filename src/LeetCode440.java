@@ -2,7 +2,7 @@
  * @author lizifan 695199262@qq.com
  * @since 2020.2.17 19:45
  */
-public class LeetCode440 {
+public class LeetCode440 implements Important {
 
     private int targetIndex;
     private int maxIndex;

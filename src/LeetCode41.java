@@ -2,7 +2,7 @@
  * @author lizifan 695199262@qq.com
  * @since 2020.2.17 22:19
  */
-public class LeetCode41 {
+public class LeetCode41 implements Important {
 
     public static int firstMissingPositive(int[] nums) {
         int len = nums.length;
