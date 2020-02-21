@@ -9,4 +9,12 @@ class TreeNode {
     TreeNode(int val) {
         this.val = val;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[val:%d left:%d right:%d]",
+                val,
+                left != null ? left.val : null,
+                right != null ? right.val : null);
+    }
 }
