@@ -53,38 +53,59 @@ class BoundedBlockingQueue {
     public void enqueue(int element) throws InterruptedException {
         Node n = new Node();
         n.val = element;
+        int c;
 
         offerLock.lock();
         try {
-            if(count.get() > sizeLimit) {
-                notEmpty.await();
+            while (count.get() > sizeLimit) {
+                notFull.await();
             }
 
             tail.next = n;
             tail = n;
-            count.incrementAndGet();
-            notEmpty.signal();
+            c = count.incrementAndGet();
+            if(c < sizeLimit) {
+                notFull.signal();
+            }
+            notFull.signal();
         } finally {
             offerLock.unlock();
+        }
+
+        if(c == 0) {
+            pollLock.lock();
+            try {
+                notEmpty.signal();
+            } finally {
+                pollLock.unlock();
+            }
         }
     }
 
     public int dequeue() throws InterruptedException {
-        int val;
+        int val = -1;
+        int c = -1;
         pollLock.lock();
         try {
-            if(count.get() == 0) {
-                pollLock.wait();
+            if(count.get() > 0) {
+                Node n = head.next;
+                head.next = n.next;
+                val = n.val;
+                n.next = null;
+
+                c = count.getAndDecrement();
+                if(c > 1) {
+                    notEmpty.signal();
+                }
             }
-
-            Node n = head.next;
-            head.next = n.next;
-
-            count.decrementAndGet();
-            val = n.val;
-            notFull.signal();
         } finally {
             pollLock.unlock();
+        }
+
+        if(c == sizeLimit) {
+            offerLock.lock();
+            notFull.signal();
+            offerLock.unlock();
         }
 
         return val;
